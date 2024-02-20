@@ -24,6 +24,8 @@ public class UserServiceImpl implements UserServices {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
     private HotelServices hotelServices;
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -49,9 +51,9 @@ public class UserServiceImpl implements UserServices {
         List<Rating> ratings = Arrays.stream(RatingOfService).toList();
 
         List<Rating> ratingList = ratings.stream().map(rating -> {
-            ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://RATING-SERVICE/ratings/hotels" + rating.getHotelId(), Hotel.class);
+//            ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://RATING-SERVICE/ratings/hotels" + rating.getHotelId(), Hotel.class);
             Hotel hotel = hotelServices.getHotel(rating.getHotelId());
-            logger.info("Response status code: {}", forEntity.getStatusCode());
+//            logger.info("Response status code: {}", forEntity.getStatusCode());
             rating.setHotel(hotel);
             return rating;
         }).collect(Collectors.toList());
