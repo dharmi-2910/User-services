@@ -1,6 +1,5 @@
 package com.example.userservice;
 
-import com.example.userservice.entities.Rating;
 import com.example.userservice.external.services.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -13,8 +12,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class UserServiceApplication {
 
-    void contextLoad(){
-    }
+//    void contextLoad(){
+//    }
 
     @Autowired
     private RatingService ratingService;
