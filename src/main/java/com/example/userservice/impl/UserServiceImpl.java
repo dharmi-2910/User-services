@@ -9,6 +9,7 @@ import com.example.userservice.services.UserServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
@@ -23,8 +24,6 @@ public class UserServiceImpl implements UserServices {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
     private HotelServices hotelServices;
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -44,15 +43,20 @@ public class UserServiceImpl implements UserServices {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new RuntimeException("User with id not found in the server!! " + userId));
 
-        List<Rating> userList = user.getRatings().stream().map(rating -> {
-            Hotel hotel = hotelServices.getHotel(user.getId());
-            Rating rating1 = new Rating();
-            rating1.setRating(rating.getRating());
-            rating1.setHotel(hotel);
-            return rating1;
+        Rating[] forObject = restTemplate.getForObject("http://RATING-SERVICE/ratings/user" + userId, Rating[].class);
+        logger.info("Ratings: {}", forObject);
+
+        List<Rating> ratings = Arrays.stream(forObject).toList();
+
+        List<Rating> ratingList = ratings.stream().map(rating -> {
+            ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://USER-SERVICES/users/hotels" + rating.getHotelId(), Hotel.class);
+            Hotel hotel = hotelServices.getHotel(rating.getHotelId());
+            logger.info("Response status code: {}", forEntity.getStatusCode());
+            rating.setHotel(hotel);
+            return rating;
         }).collect(Collectors.toList());
 
-        user.setRatings(userList);
+        user.setRatings(ratingList);
         return user;
     }
 }
