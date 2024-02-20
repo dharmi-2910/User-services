@@ -1,6 +1,5 @@
 package com.example.userservice.impl;
 
-import com.example.userservice.Exception.ResourceNotFoundException;
 import com.example.userservice.entities.Hotel;
 import com.example.userservice.entities.Rating;
 import com.example.userservice.entities.User;
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserServices {
     @Override
     public User getUser(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new ResourceNotFoundException("User with id not found in the server!! " + userId));
+                new RuntimeException("User with id not found in the server!! " + userId));
 
         Rating[] forObject = restTemplate.getForObject("http://RATING-SERVICE/ratings/" + userId, Rating[].class);
         logger.info("Ratings: {}", forObject);
